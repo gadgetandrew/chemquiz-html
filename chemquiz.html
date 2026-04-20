@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Chemistry Quiz</title>
+
+<style>
+body{
+font-family:Arial;
+text-align:center;
+background:#f4f4f4;
+}
+
+.box{
+background:white;
+padding:20px;
+margin:40px auto;
+width:70%;
+border-radius:10px;
+}
+
+button{
+display:block;
+margin:10px auto;
+padding:10px;
+width:80%;
+font-size:16px;
+}
+
+#nextBtn{
+background:#4CAF50;
+color:white;
+border:none;
+display:none;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+<input type="number" id="goTo" placeholder="Go to question number">
+<button onclick="goToQuestion()">Go</button>
+
+<h3 id="qNumber"></h3>
+<h2 id="question"></h2>
+<div id="answers"></div>
+<h3 id="feedback"></h3>
+
+<button id="nextBtn" onclick="nextQuestion()">Next Question</button>
+<button onclick="skipQuestion()">Skip Question</button>
+<button onclick="resetQuiz()">🔄 Restart Quiz</button>
+
+<h3 id="score"></h3>
+
+</div>
+
+<script>
+
+const rawQuestions = `
+
+What process occurs when iron forms rust?|Oxidation|Reduction|Neutralisation|Combustion|0
+What is a molecule?|The smallest particle of a compound that can exist independently|A charged particle|A metal atom|A neutron|0
+What is atomic mass?|The mass of an atom expressed in atomic mass units|The number of electrons|The number of protons|The number of neutrons|0
+What is the atomic number?|The number of protons in the nucleus|The number of neutrons|The mass of the atom|The number of molecules|0
+What is the atomic number?|The number of protons in the nucleus|The number of neutrons|The mass of the atom|The number of molecules|0
+Write down the balanced equation for the hydrolysis of NaHCO3|HCO3− + H2O ⇌ H2CO3 + OH−|NaHCO3 + H2O ⇌ H2CO3 + NaOH|NaHCO3 ⇌ Na+ + HCO3−|H2CO3 ⇌ CO2 + H2O|0
+Give an example of a weak diprotic acid|(COOH)2|HCl|H2SO4|NaOH|0
+For which ONE of the following molecular formulae are CHAIN isomers possible?|C3H8|C4H10|C2H6O|C3H8O|1
+The type of organic compound formed when a haloalkane is heated with a strong base is an…|Alkane|Alkene|Alkyne|Alcohol|1
+According to the Lowry-Brønsted theory, a conjugate base is formed when…|Proton is added|Electron is added|Proton is removed|Electron is removed|2
+Define the term unsaturated hydrocarbon|Contains only single bonds|Contains double or triple bonds|Contains ionic bonds|Contains no carbon|1
+Define functional isomer|Same formula different functional groups|Different formula same structure|Same atoms same structure|Different atoms same group|0
+The agent that accepts electrons is called…|Reducing agent|Oxidant|Catalyst|Solvent|1
+The process in which iron forms rust is…|Reduction|Neutralisation|Oxidation|Combustion|2
+The process in an acid-base reaction is…|Combustion|Neutralisation|Electrolysis|Reduction|1
+A substance that can act as both acid and base is…|Ampholyte|Electrolyte|Catalyst|Solvent|0
+Monoprotic acid means…|Donates one proton|Donates two protons|Accepts proton|Neutral substance|0
+Ionisation of ethanoic acid in water is…|CH3COOH → CH3COO− + H+|CH3COOH + H2O → CH3COO− + H3O+|CH3COOH → CO2 + H2|CH3COOH → CH4 + O2|1
+Conjugate acid and base of HPO4^2− are…|H2PO4− and PO4^3−|H3PO4 and PO4^2−|HPO4− and PO4^4−|H2PO4 and PO4|0
+A standard solution is…|Approximate concentration|Unknown concentration|Exactly known concentration|Very dilute solution|2
+What is a functional isomer?|Compounds with different molecular formulas|Compounds with the same molecular formula but different functional groups|Compounds with the same structure|Compounds with identical bonding|1
+What is the agent in a redox reaction that accepts electrons?|Catalyst|Electrolyte|Oxidant|Solvent|2
+What is a molecule?|A charged particle|The smallest particle of a compound that can exist independently|A metal atom|A neutron|1
+What is atomic mass?|The number of electrons|The mass of an atom expressed in atomic mass units|The number of protons|The number of neutrons|1
+What is the atomic number?|The number of neutrons|The number of protons in the nucleus|The mass of the atom|The number of molecules|1
+What is an electron?|A neutral particle|A positively charged particle|A negatively charged particle in an atom|A molecule|2
+What is a neutron?|A negative particle|A neutral particle found in the nucleus|A positive particle|A molecule|1
+Atoms with the same atomic number but different mass numbers are called:|Compounds|Isotopes|Molecules|Ions|1
+What are ions?|Neutral atoms|Molecules of gases|Atoms or groups of atoms with a charge|Elements|2
+What are elements?|Mixtures of compounds|Solutions|Substances that cannot be broken down by chemical means|Charged particles|2
+What are the two main classes of elements?|Liquids and gases|Metals and non-metals|Solids and liquids|Acids and bases|1
+What is a compound?|A mixture of substances|A substance made of more than one element chemically combined|A single atom|A charged particle|1
+What is a mixture?|A pure element|A chemical compound|Two or more substances mixed together without chemical bonding|An ion|2
+What table organises elements by atomic structure?|Reaction table|Energy table|Chemical chart|Periodic table|3
+What are the vertical columns in the periodic table called?|Periods|Rows|Groups|Layers|2
+What are the horizontal rows in the periodic table called?|Groups|Columns|Levels|Periods|3
+What are diatomic molecules?|Molecules made of three atoms|Single atoms|Molecules made of two atoms|Charged particles|2
+What is a reactant?|A substance formed|A catalyst|A substance present at the start of a reaction|An indicator|2
+What is a product in a chemical reaction?|A starting substance|A catalyst|An element|A substance formed during a reaction|3
+What is an exothermic reaction?|A reaction that absorbs energy|A reaction that stops|A reversible reaction|A reaction that releases energy|3
+What is an endothermic reaction?|A reaction that releases energy|A reaction that absorbs energy|A reaction that stops|A combustion reaction|1
+What is relative atomic mass (RAM)?|The number of protons|The weighted average mass of an atom|The number of electrons|The mass of a molecule|1
+What are the SI units of gas pressure?|atm|mmHg|Pascal (Pa)|bar|2
+What does Boyle’s Law state?|Pressure is directly proportional to temperature|Pressure is inversely proportional to volume at constant temperature|Volume is directly proportional to pressure|Temperature is constant|1
+Which equation represents Boyle’s Law?|PV = nRT|V/T = constant|P₁V₁ = P₂V₂|P/T = constant|2
+What happens to gas pressure when temperature increases (constant volume)?|Pressure decreases|Pressure stays the same|Pressure increases|Pressure becomes zero|2
+What happens to gas volume when temperature increases (constant pressure)?|Volume decreases|Volume stays the same|Volume increases|Volume becomes zero|2
+What is the SI unit of temperature?|Celsius|Fahrenheit|Joule|Kelvin|3
+What is absolute zero in Kelvin?|-273 K|273 K|0 K|100 K|2
+What is Charles’s Law?|Pressure is inversely proportional to volume|Temperature is constant|Volume is directly proportional to temperature at constant pressure|Volume is constant|2
+Which equation represents Charles’s Law?|P₁V₁ = P₂V₂|PV = nRT|V₁/T₁ = V₂/T₂|P/T = constant|2
+What does the ideal gas equation state?|P₁V₁ = P₂V₂|V/T = constant|P/T = constant|PV = nRT|3
+What does n represent in PV = nRT?|Pressure|Volume|Temperature|Number of moles|3
+What does R represent in PV = nRT?|Rate of reaction|Resistance|Radius|Gas constant|3
+What is concentration?|Amount of solvent|Mass of container|Amount of solute per volume of solution|Volume of gas|2
+What is molarity?|Grams per litre|Volume per mole|Mass per mole|Moles per litre|3
+What is a dilute solution?|High concentration of solute|Low concentration of solute|No solvent|Pure solute|1
+What is a concentrated solution?|Low concentration of solute|No solute|High concentration of solute|Pure solvent|2
+What is a solute?|Substance that dissolves|Container|Substance that is dissolved|Indicator|2
+What is a solvent?|Substance dissolved|Solid|Gas only|Substance that dissolves the solute|3
+What is a solution?|Pure substance|Element|Compound only|Mixture of solute and solvent|3
+What type of bond involves sharing electrons?|Ionic bond|Covalent bond|Metallic bond|Hydrogen bond|1
+What type of bond involves transfer of electrons?|Covalent bond|Metallic bond|Ionic bond|Hydrogen bond|2
+What type of bond is found in metals?|Ionic bond|Covalent bond|Hydrogen bond|Metallic bond|3
+What is an ionic bond?|Sharing of electrons|Weak intermolecular force|Magnetic force|Attraction between oppositely charged ions|3
+What is a covalent bond?|Transfer of electrons|Attraction between ions|Sharing of electron pairs between atoms|Weak force|2
+What is electronegativity?|Mass of atom|Number of protons|Volume of atom|Ability of an atom to attract electrons|3
+What is a polar molecule?|Molecule with equal charge|Neutral atom|Ion only|Molecule with uneven charge distribution|3
+What is a non-polar molecule?|Molecule with uneven charge|Ion|Charged particle|Molecule with even charge distribution|3
+What is hydrogen bonding?|Ionic bond|Covalent bond|Attraction between H and N, O or F|Metallic bond|2
+What is van der Waals force?|Strong ionic bond|Covalent bond|Metallic bond|Weak intermolecular force|3
+What is a catalyst?|Substance that slows reaction|Reactant|Substance that speeds up a reaction without being used up|Product|2
+What is activation energy?|Total energy released|Energy of products|Energy lost|Minimum energy required for a reaction|3
+What happens when a catalyst is added?|Activation energy increases|Reaction stops|Temperature drops|Activation energy decreases|3
+What is reaction rate?|Amount of product|Energy released|Mass of reactants|Speed of a chemical reaction|3
+Which factor increases reaction rate?|Lower temperature|Less surface area|Lower concentration|Higher temperature|3
+Which factor decreases reaction rate?|Higher temperature|Higher concentration|More catalyst|Lower temperature|3
+What is equilibrium in chemistry?|Reaction stops|Only forward reaction|Only reverse reaction|Rate of forward and reverse reactions equal|3
+What is a reversible reaction?|Only forward reaction|Irreversible change|Explosion|Reaction that can go both directions|3
+What happens at equilibrium?|Reaction stops|Only products form|Only reactants form|No net change in concentrations|3
+What is Le Chatelier’s Principle?|System stops reacting|Energy is destroyed|Mass is lost|System shifts to oppose change|3
+What happens if concentration increases at equilibrium?|System stops|No effect|Energy increases|System shifts to reduce change|3
+What happens if temperature increases at equilibrium?|System stops|No change|Energy disappears|System shifts to absorb heat|3
+What happens if pressure increases in a gas reaction?|System stops|No effect|Volume increases|System shifts to fewer gas moles|3
+What is a strong acid?|Acid that does not ionise|Weak acid|Neutral substance|Acid that ionises completely|3
+What is a weak acid?|Acid that ionises completely|Base|Salt|Acid that ionises partially|3
+What is pH?|Temperature scale|Pressure unit|Energy level|Measure of acidity or alkalinity|3
+What pH value is neutral?|0|14|1|7|3
+What pH value is acidic?|Greater than 7|Equal to 7|Zero|Less than 7|3
+What pH value is basic?|Less than 7|Equal to 7|Negative|Greater than 7|3
+What is a salt?|Only acid|Only base|Gas|Product of acid-base reaction|3
+What is neutralisation?|Acid only reaction|Base only reaction|No reaction|Acid reacts with base to form salt and water|3
+What is oxidation?|Gain of electrons|No change|Gain of protons|Loss of electrons|3
+What is reduction?|Loss of electrons|No change|Loss of protons|Gain of electrons|3
+What is a redox reaction?|No electron movement|Only heat transfer|Only pressure change|Reaction involving electron transfer|3
+What is an oxidising agent?|Substance that loses electrons|Catalyst|Solvent|Substance that gains electrons|3
+What is a reducing agent?|Substance that gains electrons|Catalyst|Gas|Substance that loses electrons|3
+What is corrosion?|Fast reaction|Combustion|Explosion|Slow destruction of metal|3
+What is rust?|Iron metal|Water|Salt|Iron oxide|3
+What conditions are needed for rusting?|Heat only|Cold only|Pressure only|Water and oxygen|3
+What is electrolysis?|Combustion|Neutralisation|Heating|Decomposition using electricity|3
+What is an electrolyte?|Insulator|Metal only|Gas|Substance that conducts electricity in solution|3
+What happens at the cathode?|Oxidation occurs|No reaction|Heating|Reduction occurs|3
+What happens at the anode?|Reduction occurs|Cooling|No change|Oxidation occurs|3
+What is Faraday’s law?|Energy law|Gas law|Motion law|Amount of substance depends on charge passed|3
+What is a hydrocarbon?|Contains oxygen|Contains nitrogen|Contains metals|Compound of hydrogen and carbon only|3
+What is an alkane?|Unsaturated hydrocarbon|Alcohol|Acid|Saturated hydrocarbon|3
+What is an alkene?|Saturated hydrocarbon|Alcohol|Acid|Unsaturated hydrocarbon|3
+What is an alkyne?|Double bond|Single bond|Hydrocarbon with triple bond|No bonds|2
+What is a saturated compound?|Double bonds|Only single bonds|Triple bonds|No bonds|1
+What is an unsaturated compound?|Only single bonds|No bonds|Metallic bonds|Contains double or triple bonds|3
+What is cracking?|Joining molecules|Cooling process|Neutralisation|Breaking large molecules into smaller ones|3
+What is polymerisation?|Breaking molecules|Heating|Joining small molecules to form large ones|Cooling|2
+What is a polymer?|Small molecule|Atom|Ion|Large molecule made of repeating units|3
+What is a monomer?|Large molecule|Ion|Metal|Small molecule that forms polymers|3
+What is combustion?|Cooling reaction|Neutralisation|Electrolysis|Reaction with oxygen releasing energy|3
+What is complete combustion?|Produces CO only|No oxygen|No products|Produces CO₂ and H₂O|3
+What is incomplete combustion?|Produces only CO₂|No reaction|Only water|Produces CO or soot|3
+What is an alcohol?|Hydrocarbon|Acid|Salt|Organic compound with -OH group|3
+What is a carboxylic acid?|Alcohol|Alkane|Salt|Organic compound with -COOH group|3
+What is esterification?|Acid + base|Combustion|Electrolysis|Alcohol + acid → ester + water|3
+What is the mole?|Mass of substance|Volume of gas|Energy unit|Amount of substance containing Avogadro’s number of particles|3
+What is Avogadro’s number?|1.0 × 10²³|6.022 × 10²²|10²³|6.022 × 10²³|3
+What is molar mass?|Mass of one atom|Mass of one molecule|Mass of container|Mass of one mole of a substance|3
+What is the unit of molar mass?|kg|mol|Pa|g/mol|3
+What is empirical formula?|Exact number of atoms|Molecular structure|Reaction formula|Simplest whole number ratio of atoms|3
+What is molecular formula?|Simplest ratio|Mass formula|Ionic formula|Actual number of atoms in a molecule|3
+What is percentage composition?|Mass of compound|Volume of gas|Temperature|Percentage of each element in compound|3
+What is stoichiometry?|Study of heat|Study of motion|Study of pressure|Calculation of reactants and products|3
+What is limiting reagent?|Reactant left over|Product formed|Catalyst|Reactant used up first|3
+What is excess reagent?|Reactant used first|Product|Catalyst|Reactant left after reaction|3
+What is yield?|Amount of reactant|Energy released|Temperature|Amount of product formed|3
+What is percentage yield?|Mass ÷ volume|Energy ÷ time|Pressure ÷ volume|Actual yield ÷ theoretical yield × 100|3
+What is concentration in mol/dm³?|Mass per litre|Volume per mole|Energy per mole|Moles per cubic decimetre|3
+What is dilution?|Increasing concentration|Removing solvent|Heating|Lowering concentration by adding solvent|3
+What is titration?|Heating method|Cooling method|Electrolysis|Method to find concentration|3
+What is equivalence point?|Start of reaction|End of reaction|No reaction|Point where acid = base|3
+What is an indicator?|Solvent|Catalyst|Reactant|Substance that changes colour|3
+What is buffer solution?|Changes pH rapidly|Strong acid|Resists pH change|Strong base|2
+What is solubility?|Mass of solid|Volume of gas|Energy|Amount that dissolves|3
+What is a saturated solution?|No solute|Pure solvent|Maximum solute dissolved|Gas only|2
+What is an unsaturated solution?|Maximum solute|No solvent|Solid only|Can dissolve more solute|3
+What is a precipitate?|Gas formed|Liquid formed|Solution|Insoluble solid formed|3
+What is filtration?|Mixing|Heating|Separating solid from liquid|Cooling|2
+What is distillation?|Mixing|Cooling|Reaction|Separating liquids by boiling point|3
+What is chromatography?|Heating|Cooling|Combustion|Separating mixtures|3
+What is boiling point?|Temperature where solid melts|Freezing point|Pressure|Temperature where liquid becomes gas|3
+What is melting point?|Boiling point|Freezing point|Gas formation|Temperature where solid becomes liquid|3
+What is freezing point?|Boiling point|Melting point|Gas formation|Temperature where liquid becomes solid|3
+What is density?|Volume per mass|Mass only|Mass per volume|Volume only|2
+What is the formula for density?|Mass × volume|Volume ÷ mass|Energy ÷ volume|Density = mass ÷ volume|3
+What is diffusion?|Low to high|No movement|Random stop|Movement from high to low concentration|3
+What is osmosis?|Movement of gas|Movement of solids|Reaction|Movement of water across membrane|3
+What is effusion?|Gas dissolving|Gas reacting|Gas freezing|Gas escaping through small hole|3
+What is a colloid?|Pure substance|Element|Compound|Mixture with dispersed particles|3
+What is suspension?|Solution|Gas|Element|Mixture where particles settle|3
+What is a solution?|Heterogeneous mixture|Element|Compound|Homogeneous mixture|3
+What is homogeneous mixture?|Non-uniform|Solid only|Gas only|Uniform composition|3
+What is heterogeneous mixture?|Uniform|Pure|Gas|Non-uniform composition|3
+What is a phase?|Energy|Mass|Volume|State of matter|3
+What are the three states of matter?|Solid only|Gas only|Liquid only|Solid, liquid, gas|3
+What is a solid?|No shape|Only gas|Liquid only|State with fixed shape and volume|3
+What is a liquid?|Fixed shape|Gas only|Solid only|State with fixed volume but no fixed shape|3
+What is a gas?|Fixed shape|Solid only|Liquid only|State with no fixed shape or volume|3
+What happens during melting?|Liquid becomes gas|Gas becomes solid|No change|Solid becomes liquid|3
+What happens during freezing?|Solid becomes gas|Gas becomes liquid|No change|Liquid becomes solid|3
+What happens during boiling?|Gas becomes liquid|Solid becomes liquid|No change|Liquid becomes gas|3
+What happens during condensation?|Liquid becomes gas|Solid becomes gas|No change|Gas becomes liquid|3
+What happens during sublimation?|Gas becomes solid|Liquid becomes solid|No change|Solid becomes gas directly|3
+What is kinetic energy?|Energy of position|Energy lost|Energy gained|Energy of motion|3
+What happens to particles when temperature increases?|Move slower|Stop moving|Disappear|Move faster|3
+What is pressure?|Mass per volume|Energy per time|Volume per mass|Force per unit area|3
+What causes gas pressure?|Gravity|Temperature only|Volume only|Collisions of particles|3
+What is volume?|Mass|Energy|Pressure|Space occupied|3
+What is temperature?|Mass|Volume|Pressure|Measure of kinetic energy|3
+What is heat?|Mass|Volume|Pressure|Energy transferred due to temperature difference|3
+What is thermal expansion?|Decrease in size|No change|Cooling|Increase in size when heated|3
+What is specific heat capacity?|Mass of object|Volume of object|Pressure|Energy needed to raise temperature|3
+What is conduction?|Heat transfer through fluid|Radiation|Cooling|Heat transfer through direct contact|3
+What is convection?|Direct contact|Radiation|No transfer|Heat transfer through fluid movement|3
+What is radiation?|Contact|Fluid movement|Solid only|Heat transfer through waves|3
+What is reflection?|Absorption|Transmission|Refraction|Bouncing of waves|3
+What is refraction?|Reflection|Absorption|Transmission|Bending of light|3
+What is absorption?|Reflecting energy|Bending light|Stopping motion|Taking in energy|3
+What is transmission?|Reflection|Absorption|Refraction|Passing through material|3
+What is wave?|Mass transfer|Volume transfer|Pressure|Energy transfer through medium or space|3
+What is frequency?|Wave height|Wave length|Energy|Number of waves per second|3
+What is wavelength?|Number of waves|Energy|Speed|Distance between waves|3
+What is amplitude?|Length|Speed|Frequency|Height of wave|3
+What is speed?|Mass per time|Energy per time|Volume per time|Distance per time|3
+What is acceleration?|Constant speed|No movement|Mass change|Change in velocity|3
+What is force?|Energy|Mass|Volume|Push or pull|3
+What is mass?|Force|Energy|Volume|Amount of matter|3
+What is weight?|Mass|Energy|Volume|Force due to gravity|3
+What is gravity?|Energy|Mass|Volume|Force of attraction between masses|3
+What is energy?|Mass|Volume|Force|Ability to do work|3
+What is work?|Mass × volume|Energy ÷ time|Pressure × volume|Force × distance|3
+What is power?|Work done|Energy|Force|Rate of doing work|3
+What is efficiency?|Mass ÷ volume|Energy ÷ time|Pressure ÷ volume|Useful output ÷ input × 100|3
+What is momentum?|Force × distance|Energy × time|Volume × mass|Mass × velocity|3
+What is velocity?|Speed only|Distance|Time|Speed with direction|3
+What is displacement?|Total distance|Speed|Time|Distance in a specific direction|3
+What is scalar quantity?|Magnitude and direction|Force|Vector only|Quantity with magnitude only|3
+What is vector quantity?|Magnitude only|Time|Mass|Quantity with magnitude and direction|3
+What is distance?|Shortest path|Direction only|Speed|Total path travelled|3
+What is speed?|Velocity|Acceleration|Force|Distance per time|3
+What is average speed?|Instant speed|Acceleration|Force|Total distance ÷ total time|3
+What is uniform motion?|Changing speed|No motion|Acceleration|Constant speed|3
+What is non-uniform motion?|Constant speed|No motion|Uniform|Changing speed|3
+What is inertia?|Force|Energy|Mass|Resistance to change in motion|3
+What is Newton’s First Law?|F=ma|Action-reaction|Energy law|Object stays at rest or motion unless acted on|3
+What is Newton’s Second Law?|Inertia|Action-reaction|Energy|F = ma|3
+What is Newton’s Third Law?|F=ma|Inertia|Energy|Every action has equal opposite reaction|3
+What is friction?|Force causing motion|Energy|Mass|Force opposing motion|3
+What is air resistance?|No friction|Gravity|Mass|Friction in air|3
+What is terminal velocity?|Maximum speed|Zero speed|Acceleration|Constant velocity when forces balance|3
+What is free fall?|Motion with friction|No motion|Circular motion|Motion under gravity only|3
+What is circular motion?|Straight line|No motion|Random motion|Motion in a circle|3
+What is centripetal force?|Force outward|No force|Gravity only|Force towards centre|3
+What is kinetic energy?|Energy stored|Heat energy|Light energy|Energy of motion|3
+What is potential energy?|Energy of motion|Heat|Light|Stored energy|3
+What is gravitational potential energy?|Energy of motion|Heat|Light|Energy due to height|3
+What is elastic potential energy?|Energy of motion|Heat|Light|Energy stored when stretched|3
+What is conservation of energy?|Energy lost|Energy gained|Energy disappears|Energy cannot be created or destroyed|3
+What is renewable energy?|Energy from fossil fuels|No energy|Chemical energy|Energy from natural sources|3
+What is non-renewable energy?|Infinite energy|Solar energy|Wind energy|Energy from finite sources|3
+What is fossil fuel?|Water|Air|Metal|Coal, oil, gas|3
+What is solar energy?|Energy from earth|Energy from wind|Energy from water|Energy from the sun|3
+What is wind energy?|Energy from sun|Energy from water|Energy from earth|Energy from moving air|3
+What is hydroelectric energy?|Energy from wind|Energy from sun|Energy from gas|Energy from water flow|3
+What is nuclear energy?|Energy from electrons|Energy from atoms only|Energy from heat|Energy from nucleus|3
+What is radioactive decay?|Stable atom|No change|Cooling|Unstable nucleus emits radiation|3
+What is half-life?|Full decay time|No decay|Energy time|Time for half to decay|3
+What is alpha radiation?|Electron emission|Wave|Light|Helium nucleus emission|3
+What is beta radiation?|Helium nucleus|Light|Wave|Electron emission|3
+What is gamma radiation?|Particle|Mass|Solid|Electromagnetic wave|3
+What is ionisation?|Neutral atoms|Molecules|Energy|Formation of charged particles|3
+What is background radiation?|Artificial only|No radiation|Light only|Radiation present naturally|3
+What is shielding?|Increasing radiation|Producing radiation|Removing mass|Blocking radiation|3
+What is contamination?|Clean material|Pure substance|No radiation|Presence of unwanted radioactive material|3
+What is irradiation?|Absorption|Reflection|Cooling|Exposure to radiation|3
+What is current?|Flow of energy|Flow of mass|Flow of heat|Flow of electric charge|3
+What is voltage?|Current|Resistance|Power|Potential difference|3
+What is resistance?|Flow of current|Voltage|Energy|Opposition to current|3
+What is Ohm’s Law?|P = IV|E = mc²|F = ma|V = IR|3
+What is the unit of current?|Volt|Ohm|Watt|Ampere|3
+What is the unit of voltage?|Ampere|Ohm|Watt|Volt|3
+What is the unit of resistance?|Volt|Ampere|Watt|Ohm|3
+What is a conductor?|Material that blocks current|Gas|Liquid only|Material that allows current|3
+What is an insulator?|Material that allows current|Metal|Wire|Material that blocks current|3
+What is a circuit?|Open path|No path|Broken wire|Closed path for current|3
+What is a series circuit?|Multiple paths|No path|Parallel only|One path for current|3
+What is a parallel circuit?|Single path|No path|Series only|Multiple paths for current|3
+What happens in a series circuit?|Different current|No current|Voltage same|Same current flows|3
+What happens in a parallel circuit?|Same current|No current|Voltage lost|Same voltage across branches|3
+What is power in electricity?|Voltage only|Current only|Resistance|Energy per time|3
+What is the unit of power?|Volt|Ampere|Ohm|Watt|3
+What is energy?|Mass|Volume|Force|Ability to do work|3
+What is the unit of energy?|Watt|Volt|Ampere|Joule|3
+What is a fuse?|Battery|Switch|Wire|Safety device that melts|3
+What is a circuit breaker?|Battery|Wire|Resistor|Switch that stops current|3
+What is earthing?|Power source|Wire only|Voltage|Safety path to ground|3
+What is a battery?|Wire|Switch|Resistor|Source of electrical energy|3
+What is a cell?|Wire|Switch|Resistor|Single source of electrical energy|3
+What is direct current (DC)?|Alternating current|No current|Variable current|Current in one direction|3
+What is alternating current (AC)?|One direction|No current|Constant current|Current changes direction|3
+What is frequency?|Energy|Voltage|Mass|Cycles per second|3
+What is the unit of frequency?|Volt|Ampere|Ohm|Hertz|3
+What is a transformer?|Battery|Wire|Switch|Device that changes voltage|3
+What is electromagnetic induction?|Heating|Cooling|No change|Producing current by changing magnetic field|3
+What is a magnet?|Conductor|Insulator|Battery|Object that produces magnetic field|3
+What is a magnetic field?|Electric field|Energy|Mass|Region where magnetic force acts|3
+What is an electromagnet?|Permanent magnet|Insulator|Battery|Magnet made by current|3
+What affects strength of electromagnet?|Mass|Volume|Time|Current and turns|3
+What is a generator?|Converts electricity to motion|Battery|Wire|Converts motion to electricity|3
+What is a motor?|Converts motion to electricity|Battery|Wire|Converts electricity to motion|3
+What is efficiency?|Energy lost|Mass|Volume|Useful output ÷ input × 100|3
+What is a diode?|Allows both ways|Blocks all current|Battery|Allows current one way|3
+What is a resistor?|Increases current|Stores energy|Produces voltage|Limits current|3
+What is a capacitor?|Produces current|Blocks voltage|Creates energy|Stores charge|3
+What is light?|Sound wave|Particle only|Energy only|Electromagnetic radiation|3
+What is reflection of light?|Bending of light|Absorption|Transmission|Bouncing of light|3
+What is refraction of light?|Reflection|Absorption|Stopping|Bending of light|3
+What is a mirror?|Absorbing surface|Transparent surface|Solid only|Reflective surface|3
+What is a plane mirror?|Curved mirror|Lens|Prism|Flat mirror|3
+What is a concave mirror?|Mirror that diverges light|Flat mirror|Lens|Mirror that converges light|3
+What is a convex mirror?|Mirror that converges light|Flat mirror|Lens|Mirror that diverges light|3
+What is a lens?|Mirror|Solid block|Metal|Transparent object that refracts light|3
+What is a convex lens?|Lens that diverges light|Flat lens|Mirror|Lens that converges light|3
+What is a concave lens?|Lens that converges light|Flat lens|Mirror|Lens that diverges light|3
+What is focal point?|Point where light spreads|Centre|Edge|Point where light rays meet|3
+What is image?|Object|Energy|Wave|Representation formed by light|3
+What is real image?|Virtual image|No image|Shadow|Image formed by actual rays|3
+What is virtual image?|Real image|No image|Shadow|Image formed by apparent rays|3
+What is dispersion?|Reflection|Refraction|Absorption|Splitting of light|3
+What is spectrum?|Single colour|Light beam|Energy|Range of colours|3
+What is white light?|Single colour|Black light|No light|Combination of colours|3
+What is sound?|Light wave|Particle|Energy only|Wave produced by vibration|3
+What is frequency of sound?|Speed|Volume|Energy|Number of vibrations per second|3
+What is pitch?|Loudness|Speed|Energy|High or low sound|3
+What is loudness?|Pitch|Frequency|Speed|Volume of sound|3
+What is amplitude of sound?|Length|Speed|Energy|Height of wave|3
+What is wavelength of sound?|Height|Speed|Energy|Distance between waves|3
+What is speed of sound?|Mass|Energy|Volume|Distance per time|3
+What is echo?|Absorption|Refraction|Transmission|Reflection of sound|3
+What is ultrasound?|Low frequency sound|Light|Energy|High frequency sound|3
+What is electromagnetic spectrum?|Sound waves|Particles|Energy|Range of EM waves|3
+What is radio wave?|High frequency|Light|Sound|Low frequency EM wave|3
+What is microwave?|Light|Sound|Energy|Medium frequency EM wave|3
+What is infrared?|Light|Sound|Energy|Heat radiation|3
+What is visible light?|Sound|Energy|Mass|Light seen by eye|3
+What is ultraviolet?|Low energy|Sound|Mass|High energy radiation|3
+What is X-ray?|Light|Sound|Mass|High energy radiation|3
+What is gamma ray?|Low energy|Sound|Mass|Highest energy radiation|3
+What is a photon?|Atom|Electron|Proton|Particle of light|3
+What is wave-particle duality?|Only wave|Only particle|No behaviour|Light behaves as wave and particle|3
+What is interference?|Reflection|Refraction|Absorption|Waves combining|3
+What is diffraction?|Reflection|Refraction|Absorption|Spreading of waves|3
+What is polarization?|Reflection|Refraction|Absorption|Alignment of waves|3
+What is a cell membrane?|Produces energy|Stores DNA|Provides support|Controls entry and exit of substances|3
+What is cytoplasm?|Cell wall|Nucleus|Membrane|Jelly-like substance in cell|3
+What is a nucleus?|Stores water|Produces energy|Protects cell|Controls cell activities|3
+What is mitochondria?|Stores food|Controls cell|Protects cell|Site of respiration|3
+What is ribosome?|Stores energy|Controls cell|Membrane|Site of protein synthesis|3
+What is cell wall?|Controls cell|Stores DNA|Produces energy|Provides support in plant cells|3
+What is chloroplast?|Respiration|Protein synthesis|Storage|Site of photosynthesis|3
+What is vacuole?|Controls cell|Produces energy|Membrane|Stores cell sap|3
+What is diffusion?|Low to high|No movement|Random stop|Movement from high to low concentration|3
+What is osmosis?|Movement of gas|Movement of solids|Reaction|Movement of water through membrane|3
+What is active transport?|High to low|No movement|Passive only|Movement against concentration gradient|3
+What is photosynthesis?|Animals eat food|Cells divide|Energy lost|Plants make food using light|3
+What is respiration?|Photosynthesis|Digestion|Excretion|Release of energy from food|3
+What is aerobic respiration?|Without oxygen|No respiration|Partial respiration|Respiration with oxygen|3
+What is anaerobic respiration?|With oxygen|No respiration|Full respiration|Respiration without oxygen|3
+What is glucose?|Protein|Fat|Mineral|Simple sugar|3
+What is enzyme?|Hormone|Protein only|Energy|Biological catalyst|3
+What affects enzyme activity?|Mass|Volume|Pressure|Temperature and pH|3
+What is denaturation?|Increase activity|No change|Energy gain|Change in enzyme shape|3
+What is digestion?|Making food|Energy release|Transport|Breaking down food|3
+What is absorption?|Breaking food|Energy release|Transport|Uptake of nutrients|3
+What is circulation?|Movement of air|Movement of food|Energy|Movement of blood|3
+What is heart?|Stores food|Controls brain|Energy|Pumps blood|3
+What is artery?|Carries blood to heart|Stores blood|Produces blood|Carries blood away from heart|3
+What is vein?|Carries blood away|Stores blood|Produces blood|Carries blood to heart|3
+What is capillary?|Storage|Transport only|Energy|Exchange of substances|3
+What is blood?|Energy source|Storage|Gas|Transport medium|3
+What is red blood cell?|Carries food|Fights disease|Clots blood|Carries oxygen|3
+What is white blood cell?|Carries oxygen|Clots blood|Stores energy|Fights infection|3
+What is platelet?|Carries oxygen|Fights infection|Stores food|Helps clotting|3
+What is plasma?|Solid part|Gas|Energy|Liquid part of blood|3
+What is breathing?|Making food|Energy release|Transport|Taking in oxygen|3
+What is inhalation?|Breathing out|No breathing|Energy|Breathing in|3
+What is exhalation?|Breathing in|No breathing|Energy|Breathing out|3
+What is lung?|Heart|Brain|Kidney|Organ for gas exchange|3
+What is alveoli?|Storage|Transport|Energy|Site of gas exchange|3
+What is excretion?|Digestion|Absorption|Transport|Removal of waste|3
+What is kidney?|Pumps blood|Stores food|Controls brain|Filters blood|3
+What is urea?|Energy|Food|Gas|Waste product|3
+What is the nervous system?|Digestive system|Circulatory system|Respiratory system|System that controls body responses|3
+What is the brain?|Pumps blood|Digests food|Filters waste|Control centre of body|3
+What is the spinal cord?|Pumps blood|Stores food|Produces energy|Carries signals|3
+What is a neuron?|Blood cell|Muscle cell|Skin cell|Nerve cell|3
+What is a reflex action?|Slow response|No response|Voluntary action|Automatic response|3
+What is stimulus?|Response|Energy|Mass|Change detected|3
+What is response?|Stimulus|Energy|Mass|Reaction to stimulus|3
+What is hormone?|Enzyme|Protein|Energy|Chemical messenger|3
+What is endocrine system?|Nerve system|Digestive system|Circulatory system|Hormone system|3
+What is gland?|Stores food|Pumps blood|Filters waste|Produces hormones|3
+What is pancreas?|Pumps blood|Stores food|Filters waste|Produces insulin|3
+What is insulin?|Enzyme|Protein|Energy|Hormone controlling blood sugar|3
+What is diabetes?|Low sugar|No sugar|Energy loss|High blood sugar condition|3
+What is reproduction?|Digestion|Respiration|Excretion|Producing offspring|3
+What is sexual reproduction?|One parent|No parent|Energy|Two parents|3
+What is asexual reproduction?|Two parents|No parent|Energy|One parent|3
+What is fertilisation?|Cell division|Energy release|Transport|Fusion of gametes|3
+What is a gamete?|Body cell|Blood cell|Nerve cell|Sex cell|3
+What is sperm?|Female gamete|Body cell|Blood cell|Male gamete|3
+What is ovum?|Male gamete|Body cell|Blood cell|Female gamete|3
+What is zygote?|Gamete|Cell only|Energy|Fertilised egg|3
+What is embryo?|Gamete|Energy|Mass|Early development stage|3
+What is DNA?|Protein|Energy|Mass|Genetic material|3
+What is gene?|Protein|Energy|Mass|Section of DNA|3
+What is chromosome?|Protein|Energy|Mass|DNA structure|3
+What is heredity?|Energy|Mass|Volume|Passing traits|3
+What is variation?|Similarity|Energy|Mass|Differences between individuals|3
+What is mutation?|No change|Energy|Mass|Change in DNA|3
+What is evolution?|No change|Energy|Mass|Change over time|3
+What is natural selection?|Random change|Energy|Mass|Survival of fittest|3
+What is adaptation?|Energy|Mass|Volume|Trait for survival|3
+What is ecosystem?|Organ only|Plant only|Animal only|Living and non-living system|3
+What is habitat?|Food|Water|Air|Place organism lives|3
+What is population?|Single organism|Different species|Energy|Group of same species|3
+What is community?|Single population|Energy|Mass|Different populations|3
+What is food chain?|Mass transfer|Water transfer|Air transfer|Energy transfer|3
+What is food web?|Single chain|Energy|Mass|Linked food chains|3
+What is producer?|Eats others|Energy|Mass|Makes own food|3
+What is consumer?|Makes food|Energy|Mass|Eats others|3
+What is decomposer?|Producer|Consumer|Energy|Breaks down dead matter|3
+What is recycling in nature?|Waste only|Energy only|Mass only|Reuse of materials|3
+What is carbon cycle?|Energy cycle|Water cycle|Nitrogen cycle|Movement of carbon|3
+What is water cycle?|Energy cycle|Carbon cycle|Nitrogen cycle|Movement of water|3
+What is evaporation?|Gas to liquid|Solid to liquid|No change|Liquid to gas|3
+What is condensation?|Liquid to gas|Solid to gas|No change|Gas to liquid|3
+What is precipitation?|Evaporation|Condensation|No change|Rain falling|3
+What is transpiration?|Water gain|No change|Energy|Water loss from plants|3
+What is nitrogen cycle?|Water cycle|Carbon cycle|Energy cycle|Movement of nitrogen|3
+What is pollution?|Clean air|Pure water|Energy|Harmful substances in environment|3
+What is air pollution?|Clean air|Water pollution|Soil only|Dirty air|3
+What is water pollution?|Clean water|Air pollution|Soil only|Dirty water|3
+What is soil pollution?|Clean soil|Air pollution|Water only|Contaminated soil|3
+What is global warming?|Cooling|No change|Freezing|Increase in earth temperature|3
+What is greenhouse effect?|Cooling|No change|Freezing|Heat trapped in atmosphere|3
+What is ozone layer?|Produces oxygen|Stores heat|Energy|Protects from UV|3
+What is deforestation?|Planting trees|No change|Energy|Cutting trees|3
+What is conservation?|Destroying environment|No change|Energy|Protecting environment|3
+What is renewable resource?|Cannot be replaced|Energy only|Mass only|Can be replaced|3
+What is non-renewable resource?|Can be replaced|Energy only|Mass only|Cannot be replaced|3
+What is biodiversity?|Single species|Energy|Mass|Variety of life|3
+What is extinction?|Species grows|No change|Energy|Species disappears|3
+What is recycling?|Throwing away|Burning|Energy|Reusing materials|3
+What is reuse?|Throwing away|Burning|Energy|Using again|3
+What is reduce?|Using more|Throwing away|Energy|Using less resources|3
+What is sustainable development?|Use all resources|Destroy environment|Energy|Use resources without harming future|3
+What is ecosystem balance?|Unstable|No life|Energy|Stable environment|3
+What is invasive species?|Native species|Energy|Mass|Non-native species|3
+What is conservation area?|Unused land|Energy|Mass|Protected land|3
+What is climate change?|Short weather|No change|Energy|Long-term weather change|3
+What is fossilisation?|Destruction|Energy|Mass|Formation of fossils|3
+What is a fossil?|Living organism|Energy|Mass|Remains of organisms|3
+What is sediment?|Energy|Mass|Water only|Particles deposited|3
+What is erosion?|Building land|No change|Energy|Wearing away of land|3
+What is weathering?|Building rocks|No change|Energy|Breaking down rocks|3
+What is deposition?|Removal|Energy|Mass|Dropping of materials|3
+What is renewable energy?|Energy that ends|No energy|Mass|Energy that replenishes|3
+What is non-renewable energy?|Energy that replenishes|No energy|Mass|Energy that runs out|3
+What is conservation of resources?|Using all|Destroying|Energy|Saving resources|3
+What is environmental impact?|No effect|Energy|Mass|Effect on environment|3
+What is data?|Energy|Mass|Volume|Information collected|3
+What is information?|Raw data|Energy|Mass|Processed data|3
+What is a computer?|Energy device|Mass device|Volume device|Electronic device for processing data|3
+What is hardware?|Software|Energy|Mass|Physical parts of computer|3
+What is software?|Hardware|Energy|Mass|Programs and instructions|3
+What is input device?|Output device|Storage|CPU|Device to enter data|3
+What is output device?|Input device|Storage|CPU|Device to display data|3
+What is storage device?|Displays data|Processes data|Inputs data|Stores data|3
+What is CPU?|Storage|Input|Output|Central processing unit|3
+What is memory?|Stores permanently|Displays data|Processes data|Stores data temporarily|3
+What is RAM?|Permanent memory|Storage|CPU|Temporary memory|3
+What is ROM?|Temporary memory|Storage|CPU|Permanent memory|3
+What is a file?|Single data|Energy|Mass|Collection of data|3
+What is a folder?|Single file|Energy|Mass|Collection of files|3
+What is internet?|Single computer|Energy|Mass|Global network|3
+What is browser?|Hardware|Storage|CPU|Software to access internet|3
+What is website?|Single page|Energy|Mass|Collection of web pages|3
+What is email?|Paper message|Energy|Mass|Electronic message|3
+What is download?|Send data|Delete data|Store data|Receive data|3
+What is upload?|Receive data|Delete data|Store data|Send data|3
+What is network?|Single computer|Energy|Mass|Connected computers|3
+What is LAN?|Global network|Energy|Mass|Local network|3
+What is WAN?|Local network|Energy|Mass|Wide network|3
+What is Wi-Fi?|Wired connection|Energy|Mass|Wireless connection|3
+What is password?|Public code|Energy|Mass|Secret code|3
+What is security?|Loss of data|Energy|Mass|Protection of data|3
+What is virus?|Good software|Hardware|Energy|Malicious software|3
+What is antivirus?|Creates virus|Energy|Mass|Protects against virus|3
+What is cloud storage?|Local storage|Energy|Mass|Online storage|3
+What is database?|Single data|Energy|Mass|Organised data collection|3
+What is spreadsheet?|Word file|Image|Video|Table of data|3
+What is word processor?|Image software|Video software|Audio software|Text editing software|3
+What is presentation software?|Text editing|Image editing|Video editing|Creates slides|3
+What is coding?|Reading data|Deleting data|Energy|Writing instructions|3
+What is algorithm?|Random steps|Energy|Mass|Step-by-step instructions|3
+What is debugging?|Creating errors|Deleting data|Energy|Fixing errors|3
+What is HTML?|Programming language only|Database|Energy|Web page language|3
+What is CSS?|Programming only|Database|Energy|Styling web pages|3
+What is JavaScript?|Only styling|Only structure|Energy|Adds interactivity|3
+What is agriculture?|Mining|Fishing only|Energy|Growing crops and raising animals|3
+What is farming?|Building|Energy|Mass|Cultivating land|3
+What is irrigation?|Drying crops|Harvesting|Energy|Watering crops|3
+What is fertiliser?|Water|Seed|Energy|Substance that improves soil|3
+What is pesticide?|Grows plants|Water|Energy|Kills pests|3
+What is crop rotation?|Same crop always|No crops|Energy|Changing crops each season|3
+What is livestock?|Plants|Energy|Mass|Farm animals|3
+What is dairy farming?|Producing meat|Fishing|Energy|Producing milk|3
+What is organic farming?|Using chemicals|No farming|Energy|Natural farming without chemicals|3
+What is greenhouse farming?|Open farming|No farming|Energy|Growing plants in controlled environment|3
+What is industry?|Consumption|Energy|Mass|Production of goods|3
+What is manufacturing?|Selling products|Buying products|Energy|Making products|3
+What is raw material?|Finished product|Energy|Mass|Basic material|3
+What is product?|Raw material|Energy|Mass|Finished item|3
+What is trade?|Producing|Energy|Mass|Buying and selling|3
+What is export?|Buying from countries|Energy|Mass|Selling to other countries|3
+What is import?|Selling to countries|Energy|Mass|Buying from other countries|3
+What is economy?|Energy|Mass|Volume|System of production and trade|3
+What is resource?|Waste|Energy only|Mass only|Useful material|3
+What is labour?|Machine|Energy|Mass|Human work|3
+What is capital?|Energy|Mass|Volume|Money for business|3
+What is profit?|Loss|Energy|Mass|Gain from business|3
+What is loss?|Gain|Energy|Mass|Negative profit|3
+What is supply?|Amount needed|Energy|Mass|Amount available|3
+What is demand?|Amount available|Energy|Mass|Amount wanted|3
+What is market?|Factory|Energy|Mass|Place of trade|3
+What is inflation?|Decrease in prices|No change|Energy|Increase in prices|3
+What is deflation?|Increase in prices|No change|Energy|Decrease in prices|3
+What is currency?|Energy|Mass|Volume|Money used|3
+What is bank?|Produces goods|Energy|Mass|Stores money|3
+What is saving?|Spending money|Energy|Mass|Keeping money|3
+What is investment?|Saving|Energy|Mass|Using money to gain|3
+What is loan?|Saved money|Energy|Mass|Borrowed money|3
+What is interest?|Free money|Energy|Mass|Cost of borrowing|3
+What is budget?|Spending only|Energy|Mass|Plan for money|3
+What is tax?|Free money|Energy|Mass|Government payment|3
+What is public service?|Private only|Energy|Mass|Service for people|3
+What is education?|Work only|Energy|Mass|Learning process|3
+What is health?|Illness|Energy|Mass|State of well-being|3
+What is government?|Business|Energy|Mass|System that runs a country|3
+What is democracy?|Single ruler|No rule|Energy|People choose leaders|3
+What is election?|No voting|Energy|Mass|Voting process|3
+What is constitution?|Single law|Energy|Mass|Set of laws|3
+What is law?|Suggestion|Energy|Mass|Rule of society|3
+What is rights?|No freedom|Energy|Mass|Freedoms people have|3
+What is responsibility?|No duty|Energy|Mass|Duty to act correctly|3
+What is citizenship?|Visitor|Energy|Mass|Being part of a country|3
+What is justice?|Unfair|Energy|Mass|Fair treatment|3
+What is equality?|Unequal|Energy|Mass|Equal rights|3
+What is freedom?|No freedom|Energy|Mass|Ability to act freely|3
+What is authority?|No power|Energy|Mass|Power to make decisions|3
+What is leadership?|Following only|Energy|Mass|Guiding others|3
+What is community?|Single person|Energy|Mass|Group of people|3
+What is culture?|Energy|Mass|Volume|Beliefs and customs|3
+What is tradition?|New idea|Energy|Mass|Customs passed down|3
+What is language?|Energy|Mass|Volume|System of communication|3
+What is communication?|Keeping silent|Energy|Mass|Sharing information|3
+What is media?|Energy|Mass|Volume|Information channels|3
+What is newspaper?|Digital only|Energy|Mass|Printed news|3
+What is television?|Printed media|Energy|Mass|Broadcast media|3
+What is radio?|Video|Energy|Mass|Audio broadcast|3
+What is internet?|Local network|Energy|Mass|Global network|3
+What is social media?|Offline only|Energy|Mass|Online communication|3
+What is advertisement?|Selling directly|Energy|Mass|Promoting products|3
+What is business?|Energy|Mass|Volume|Organisation selling goods/services|3
+What is entrepreneur?|Employee|Energy|Mass|Starts business|3
+What is employment?|No job|Energy|Mass|Having a job|3
+What is unemployment?|Having job|Energy|Mass|No job|3
+What is career?|Single job|Energy|Mass|Work path|3
+What is skill?|No ability|Energy|Mass|Ability to do something|3
+What is training?|No learning|Energy|Mass|Learning skills|3
+What is experience?|No knowledge|Energy|Mass|Knowledge from doing|3
+What is teamwork?|Working alone|Energy|Mass|Working together|3
+What is management?|No organisation|Energy|Mass|Organising work|3
+What is planning?|No preparation|Energy|Mass|Preparing ahead|3
+What is goal?|No target|Energy|Mass|Target to achieve|3
+What is success?|Failure|Energy|Mass|Achieving goals|3
+What is failure?|Success|Energy|Mass|Not achieving goal|3
+What is time?|Mass|Energy|Volume|Measure of duration|3
+What is second?|Unit of mass|Unit of energy|Unit of volume|Unit of time|3
+What is minute?|100 seconds|10 seconds|1 second|60 seconds|3
+What is hour?|100 minutes|10 minutes|1 minute|60 minutes|3
+What is day?|24 hours|12 hours|10 hours|6 hours|0
+What is week?|7 days|5 days|10 days|30 days|0
+What is month?|Period of about 30 days|7 days|365 days|24 hours|0
+What is year?|365 days|30 days|7 days|24 hours|0
+What is calendar?|System of dates|Clock|Energy|Mass|0
+What is clock?|Measures time|Measures mass|Measures energy|Measures volume|0
+What is distance?|Space between points|Time|Energy|Mass|0
+What is metre?|Unit of length|Unit of mass|Unit of time|Unit of energy|0
+What is kilometre?|1000 metres|100 metres|10 metres|1 metre|0
+What is centimetre?|1/100 metre|1/10 metre|10 metres|1000 metres|0
+What is millimetre?|1/1000 metre|1/100 metre|1 metre|10 metres|0
+What is area?|Space covered|Volume|Mass|Energy|0
+What is square metre?|Unit of area|Unit of volume|Unit of mass|Unit of energy|0
+What is volume?|Space occupied|Area|Mass|Energy|0
+What is litre?|Unit of volume|Unit of mass|Unit of energy|Unit of length|0
+What is millilitre?|1/1000 litre|1/100 litre|1 litre|10 litres|0
+What is mass?|Amount of matter|Energy|Volume|Time|0
+What is kilogram?|Unit of mass|Unit of energy|Unit of time|Unit of length|0
+What is gram?|1/1000 kilogram|1/100 kilogram|1 kilogram|10 kilograms|0
+What is tonne?|1000 kilograms|100 kilograms|10 kilograms|1 kilogram|0
+What is measurement?|Finding size or amount|Guessing|Energy|Mass|0
+What is accuracy?|Closeness to true value|Random|Error|Energy|0
+What is precision?|Consistency of results|Accuracy|Error|Energy|0
+What is error?|Difference from true value|Correct value|Energy|Mass|0
+What is estimate?|Approximate value|Exact value|Error|Energy|0
+What is scale?|Marking on instrument|Energy|Mass|Volume|0
+What is unit?|Standard measurement|Random value|Energy|Mass|0
+What is conversion?|Changing units|Measuring|Energy|Mass|0
+What is data?|Collected information|Energy|Mass|Volume|0
+What is graph?|Visual data representation|Text|Energy|Mass|0
+What is chart?|Data display|Text|Energy|Mass|0
+What is table?|Organised data|Energy|Mass|Volume|0
+What is average?|Mean value|Total|Difference|Energy|0
+What is mean?|Sum ÷ number|Difference|Energy|Mass|0
+What is median?|Middle value|Average|Energy|Mass|0
+What is mode?|Most frequent value|Average|Energy|Mass|0
+What is science?|Study of the natural world|Energy|Mass|Volume|0
+What is experiment?|Test to find results|Guess|Energy|Mass|0
+What is observation?|Careful watching|Guessing|Energy|Mass|0
+What is hypothesis?|Testable idea|Fact|Energy|Mass|0
+What is conclusion?|Final result|Start|Energy|Mass|0
+What is variable?|Something that changes|Constant|Energy|Mass|0
+What is control?|Unchanged variable|Changing variable|Energy|Mass|0
+What is independent variable?|Variable you change|Variable you measure|Control|Energy|0
+What is dependent variable?|Variable you measure|Variable you change|Control|Energy|0
+What is fair test?|Only one variable changed|Many variables|No variables|Energy|0
+What is theory?|Well-supported explanation|Guess|Energy|Mass|0
+What is law (science)?|Proven rule|Guess|Energy|Mass|0
+What is model?|Representation of idea|Real object|Energy|Mass|0
+What is system?|Group of parts working together|Single part|Energy|Mass|0
+What is environment?|Surroundings|Object|Energy|Mass|0
+What is matter?|Anything with mass and volume|Energy only|Light|Heat|0
+What is energy?|Ability to do work|Mass|Volume|Time|0
+What is force?|Push or pull|Energy|Mass|Volume|0
+What is motion?|Movement|Stillness|Energy|Mass|0
+What is change?|Becoming different|Same|Energy|Mass|0
+What is structure?|Arrangement of parts|Energy|Mass|Volume|0
+What is function?|Purpose|Energy|Mass|Volume|0
+What is stability?|Staying the same|Changing|Energy|Mass|0
+What is system thinking?|Understanding connections|Ignoring parts|Energy|Mass|0
+What is pattern?|Repeated behaviour|Random|Energy|Mass|0
+What is scale?|Size or level|Energy|Mass|Volume|0
+What is proportion?|Relationship of quantities|Energy|Mass|Volume|0
+What is interaction?|Effect between things|No effect|Energy|Mass|0
+What is cause?|Reason something happens|Result|Energy|Mass|0
+What is effect?|Result of cause|Cause|Energy|Mass|0
+
+`;
+
+const questions = rawQuestions
+.split("\n")
+.map(line => line.trim())
+.filter(line => line && line.split("|").length === 6
+)
+.map(line => {
+ const parts = line.split("|");
+ return {
+  q: parts[0],
+  options: [parts[1], parts[2], parts[3], parts[4]],
+  answer: parseInt(parts[5])
+ };
+});
+
+let current = 0;
+let score = 0;
+let currentCorrect = 0;
+
+function loadQuestion(){
+ document.getElementById("nextBtn").style.display = "none";
+ document.getElementById("feedback").innerText = "";
+
+ let q = questions[current];
+
+ document.getElementById("qNumber").innerText =
+ "Question " + (current + 1) + " / " + questions.length;
+
+ document.getElementById("question").innerText = q.q;
+
+ let answersDiv = document.getElementById("answers");
+ answersDiv.innerHTML = "";
+
+ // Shuffle answers
+let shuffled = q.options
+  .map((opt, index) => ({ opt, index }))
+ for (let i = shuffled.length - 1; i > 0; i--) {
+  let j = Math.floor(Math.random() * (i + 1));
+  [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+} 
+
+// Store correct answer AFTER shuffle
+currentCorrect = shuffled.findIndex(item => item.index === q.answer);
+
+shuffled.forEach((item, index) => {
+  let btn = document.createElement("button");
+  btn.innerText = item.opt;
+  btn.onclick = () => checkAnswer(index);
+  answersDiv.appendChild(btn);
+});
+}
+
+function checkAnswer(selected){
+  if(selected === currentCorrect){
+    document.getElementById("feedback").innerText = "Correct!";
+    score++;
+  } else {
+    let correctText = questions[current].options[questions[current].answer];
+    document.getElementById("feedback").innerText =
+      "Wrong! Correct answer: " + correctText;
+  }
+
+  saveProgress(); // ✅ SAVE HERE
+
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function nextQuestion(){
+  current++;
+
+  saveProgress(); 
+
+  if(current < questions.length){
+    loadQuestion();
+  } else {
+    endQuiz();
+  }
+}
+
+function goToQuestion(){
+  let num = parseInt(document.getElementById("goTo").value);
+
+  if(num >= 1 && num <= questions.length){
+    current = num - 1;
+    saveProgress();
+    loadQuestion();
+  } else {
+    alert("Enter a number between 1 and " + questions.length);
+  }
+}
+
+function skipQuestion(){
+  current++;
+
+  saveProgress();
+
+  if(current < questions.length){
+    loadQuestion();
+  } else {
+    endQuiz();
+  }
+}
+
+function nextQuestion(){
+  current++;
+
+  saveProgress();
+
+  if(current < questions.length){
+    loadQuestion();
+  } else {
+    endQuiz();
+  }
+}
+
+function checkAnswer(selected){
+  if(selected === currentCorrect){
+    document.getElementById("feedback").innerText = "Correct!";
+    score++;
+  } else {
+    let correctText = questions[current].options[questions[current].answer];
+    document.getElementById("feedback").innerText =
+      "Wrong! Correct answer: " + correctText;
+  }
+
+  saveProgress();
+
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function endQuiz(){
+  document.getElementById("question").innerText = "Quiz Finished!";
+  document.getElementById("answers").innerHTML = "";
+  document.getElementById("score").innerText = "Score: " + score;
+  document.getElementById("nextBtn").style.display = "none";
+}
+
+function loadQuestion(){
+  let q = questions[current];
+
+  document.getElementById("qNumber").innerText =
+    "Question " + (current + 1);
+
+  document.getElementById("question").innerText = q.q;
+
+  let answersDiv = document.getElementById("answers");
+  answersDiv.innerHTML = "";
+
+  let shuffled = q.options
+    .map((opt, index) => ({ opt, index }))
+    .sort(() => Math.random() - 0.5);
+
+  currentCorrect = shuffled.findIndex(item => item.index === q.answer);
+
+  shuffled.forEach((item, index) => {
+    let btn = document.createElement("button");
+    btn.innerText = item.opt;
+    btn.onclick = () => checkAnswer(index);
+    answersDiv.appendChild(btn);
+  });
+}
+
+function saveProgress(){
+  localStorage.setItem("quiz_current", current);
+  localStorage.setItem("quiz_score", score);
+}
+
+function loadProgress(){
+  let savedCurrent = localStorage.getItem("quiz_current");
+  let savedScore = localStorage.getItem("quiz_score");
+
+  if(savedCurrent !== null){
+    current = parseInt(savedCurrent);
+  }
+
+  if(savedScore !== null){
+    score = parseInt(savedScore);
+  }
+}
+
+function resetQuiz(){
+  localStorage.removeItem("quiz_current");
+  localStorage.removeItem("quiz_score");
+
+  current = 0;
+  score = 0;
+
+  document.getElementById("feedback").innerText = "";
+  document.getElementById("score").innerText = "";
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("goTo").value = "";
+
+  loadQuestion();
+}
+
+// START APP
+loadProgress();
+loadQuestion();
+
+</script>
+
+</body>
+</html>
