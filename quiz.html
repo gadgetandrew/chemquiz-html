@@ -817,6 +817,7 @@ function checkAnswer(selected){
 }
 
 function endQuiz(){
+  document.getElementById("feedback").innerText = "";
   document.getElementById("question").innerText = "Quiz Finished!";
   document.getElementById("answers").innerHTML = "";
   document.getElementById("score").innerText = "Score: " + score;
@@ -824,10 +825,13 @@ function endQuiz(){
 }
 
 function loadQuestion(){
+  document.getElementById("nextBtn").style.display = "none";
+  document.getElementById("feedback").innerText = "";
+
   let q = questions[current];
 
   document.getElementById("qNumber").innerText =
-    "Question " + (current + 1);
+  "Question " + (current + 1) + " / " + questions.length;
 
   document.getElementById("question").innerText = q.q;
 
